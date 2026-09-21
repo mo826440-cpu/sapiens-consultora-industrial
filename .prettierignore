@@ -1,0 +1,10 @@
+dist
+coverage
+node_modules
+src/types/database.types.ts
+package-lock.json
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.svg

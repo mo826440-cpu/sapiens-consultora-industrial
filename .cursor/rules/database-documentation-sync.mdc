@@ -1,0 +1,19 @@
+---
+description: Un cambio de Supabase no termina si la documentación o los tipos quedan desfasados
+alwaysApply: true
+---
+
+# Sincronización de base de datos
+
+Cada vez que se cree, modifique o elimine cualquier elemento de Supabase, en la misma tarea hay que actualizar:
+
+1. La migración SQL en `supabase/migrations`.
+2. `docs/supabase-schema.md`.
+3. `docs/security-and-rls.md` si cambia alguna política.
+4. Tipos generados en `src/types/database.types.ts`.
+5. Validaciones Zod relacionadas.
+6. Servicios o consultas afectados.
+7. Pruebas correspondientes.
+8. `docs/schema-changelog.md`.
+
+La modificación no se considera completa si falta alguno. `supabase/migrations/` es la fuente ejecutable; `docs/supabase-schema.md` es la explicación humana.

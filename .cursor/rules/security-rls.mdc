@@ -1,0 +1,15 @@
+---
+description: Seguridad, Auth y Row Level Security
+alwaysApply: true
+---
+
+# Seguridad y RLS
+
+- El frontend solo puede usar `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY`.
+- Nunca colocar `service_role` en el navegador, en `.env.example` ni en el repositorio.
+- No hay registro público. Los usuarios los crea o invita un administrador.
+- Ocultar botones no es autorización. Los permisos reales viven en políticas RLS.
+- Roles: `administrador`, `socio`, `colaborador`, `solo_lectura`. Un rol por usuario.
+- `SECURITY DEFINER` solo si es imprescindible, con `search_path` fijo y privilegio mínimo.
+- Storage privado con políticas. Validar pertenencia y rol en cada operación.
+- Funciones de invitación u otras que necesiten privilegio elevado van en Edge Functions de Supabase, no en un backend extra.

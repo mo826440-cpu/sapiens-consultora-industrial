@@ -1,0 +1,17 @@
+---
+description: Arquitectura de la aplicación interna Sapiens Industrial
+alwaysApply: true
+---
+
+# Arquitectura del proyecto
+
+Sapiens Industrial es una SPA interna (Vite + React + TypeScript). No es la web pública.
+
+- Frontend: React 19, TypeScript estricto, Vite, React Router, Bootstrap 5, TanStack Query.
+- Backend: solo Supabase (Auth, PostgreSQL, Storage, RLS). No agregar otro backend, ORM ni BaaS.
+- Estado remoto: TanStack Query. Context API solo para sesión, perfil y UI global.
+- Formularios: React Hook Form + Zod. Gráficos: Recharts. Fechas: date-fns, locale `es-AR`, zona `America/Argentina/Cordoba`.
+- Capas: `pages` (pantallas), `features` (dominio), `components` (UI reutilizable), `services` (acceso a datos), `schemas` (Zod), `lib` (clientes).
+- No usar `src/app/` (evita confundir con Next.js).
+- Un solo proyecto interno. No inventar credenciales, empresas reales ni `service_role` en el cliente.
+- Textos en español. No mezclar datos de demostración con datos reales en producción.

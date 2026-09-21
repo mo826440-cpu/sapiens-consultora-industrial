@@ -1,0 +1,5 @@
+-- Datos de demostración solamente.
+-- Empresas, personas y textos deben ser ficticios.
+-- No ejecutar automáticamente en producción.
+-- No incluir información personal real.
+-- Fase 2: roles y ajustes viven en la migración inicial, no en esta semilla.

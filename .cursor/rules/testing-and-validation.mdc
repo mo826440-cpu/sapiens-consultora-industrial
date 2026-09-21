@@ -1,0 +1,13 @@
+---
+description: Pruebas, lint y criterio de finalización
+alwaysApply: true
+---
+
+# Pruebas y validación
+
+- ESLint, Prettier y TypeScript strict son obligatorios.
+- Vitest + React Testing Library para utilidades, formularios críticos y estados vacíos.
+- Validar permisos en RLS, no solo en la UI.
+- Una funcionalidad termina cuando: funciona, es responsive, valida, maneja carga/error/vacío, tiene tipos, pruebas razonables, pasa lint y typecheck, compila, documenta y no expone secretos.
+- Comandos: `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`.
+- Verificar en navegador los cambios de UI (escritorio y una vista móvil).

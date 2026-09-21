@@ -1,0 +1,13 @@
+---
+description: Flujo Git, commits y cambios externos
+alwaysApply: true
+---
+
+# Flujo Git
+
+- Rama principal: `main`. Trabajo en `feat/`, `fix/`, `docs/`, `chore/`, `sec/`.
+- Commits Conventional Commits en español: `feat:`, `fix:`, `docs:`, `chore:`, `test:`, `refactor:`, `sec:`.
+- Commits pequeños y descriptivos. No incluir `.env` ni secretos.
+- Pull Requests con la plantilla de `.github/PULL_REQUEST_TEMPLATE.md`.
+- No hacer push, merge, deploy ni cambios en GitHub, Supabase o Vercel sin autorización explícita del usuario.
+- No usar `git commit --amend`, force push ni saltar hooks salvo pedido expreso.

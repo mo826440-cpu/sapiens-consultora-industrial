@@ -1,0 +1,18 @@
+---
+description: Calidad de código TypeScript y React
+alwaysApply: true
+---
+
+# Calidad de código
+
+- TypeScript `strict`. Prohibido `any` salvo justificación documentada en el mismo cambio.
+- Componentes pequeños y reutilizables. Separar presentación, lógica y acceso a datos.
+- Nombres claros en español o inglés consistente; no abreviar sin motivo.
+- No duplicar lógica: extraer hooks, servicios o utilidades.
+- Validar entradas con Zod antes de mutar.
+- Toda pantalla remota debe manejar carga, error y vacío.
+- No eliminar datos sin confirmación explícita del usuario.
+- No exponer secretos. Nunca `service_role` en el frontend.
+- Preferir `import type` para tipos (`verbatimModuleSyntax`).
+- No usar `enum` de TypeScript (`erasableSyntaxOnly`). Usar objetos `as const` o uniones.
+- Antes de dar una tarea por terminada: lint, typecheck, pruebas afectadas y build.

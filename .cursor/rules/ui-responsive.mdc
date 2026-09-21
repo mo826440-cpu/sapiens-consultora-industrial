@@ -1,0 +1,15 @@
+---
+description: Diseño industrial, responsive y accesible
+globs: src/**/*.{tsx,css}
+alwaysApply: false
+---
+
+# UI responsive
+
+- Mobile first. Sidebar en escritorio; menú compacto u offcanvas en celular.
+- Tablas convertidas a tarjetas o bloques apilados en pantallas chicas.
+- Formularios por secciones. Contraste adecuado. Foco de teclado visible.
+- Estados visuales consistentes: verde completado, ámbar pendiente, rojo bloqueo/vencida, azul en curso, gris no iniciada.
+- Pocas animaciones. Textos legibles. Interfaz en español.
+- Fechas `dd/MM/yyyy`. Zona horaria configurable, inicial `America/Argentina/Cordoba`.
+- Confirmar acciones destructivas. No inventar datos ficticios en pantallas de producción.

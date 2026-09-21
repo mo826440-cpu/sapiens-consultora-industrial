@@ -1,0 +1,18 @@
+---
+description: Convenciones de base de datos y migraciones Supabase
+globs: supabase/**/*.{sql,toml}
+alwaysApply: true
+---
+
+# Base de datos Supabase
+
+- Fuente de verdad ejecutable: `supabase/migrations/`.
+- Cada cambio crea una migración nueva `YYYYMMDDHHMMSS_descripcion.sql`.
+- No reescribir migraciones ya aplicadas en entornos compartidos. Crear una correctiva.
+- No usar un único SQL gigante como única fuente.
+- Tablas de negocio: `id uuid`, `created_at`, `updated_at`, y `created_by` / `updated_by` cuando aplique.
+- RLS activado en toda tabla expuesta. Políticas explícitas por SELECT, INSERT, UPDATE y DELETE.
+- Archivos pesados en Storage, nunca en PostgreSQL.
+- No editar producción a mano sin dejar migración y documentación.
+- Tipos TS: `npx supabase gen types typescript --local > src/types/database.types.ts`.
+- `seed.sql` es solo demostración ficticia. Nunca ejecutarlo automáticamente en producción.
