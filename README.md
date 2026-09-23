@@ -44,4 +44,4 @@ npm run build
 
 ## Fase actual
 
-Fases 0 a 3: planificación, shell, Auth/perfiles y seguimiento (etapas, tareas, hitos y avances). Las migraciones se aplican en el SQL Editor del proyecto hosted. Ver [instalación](docs/installation-guide.md).
+Fases 0 a 3 y 0b hechas y aplicadas en hosted. Las tres migraciones están alineadas. Ver [instalación](docs/installation-guide.md) y [seguridad](docs/security-and-rls.md).

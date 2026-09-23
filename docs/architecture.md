@@ -38,6 +38,7 @@ ESLint quedó en 9 porque `eslint-plugin-jsx-a11y` aún no declara soporte para 
 - Bootstrap 5 con tema industrial propio.
 - Alta inicial de usuarios desde el panel de Supabase; Edge Function de invitación más adelante.
 - Avance de etapa: promedio de ítems y tareas, ocho etapas con peso igual.
+- Funciones `SECURITY DEFINER`: `SET search_path = ''` y nombres calificados (`public.`, `auth.`, `pg_catalog.`).
 - Tabla `notifications` prevista; UI diferida.
 - Commits en español con Conventional Commits.
 

@@ -65,6 +65,14 @@ Sin Docker no se puede hacer `supabase db push` desde esta máquina. En el SQL E
 
 Si el SQL Editor avisa que un tipo o tabla ya existe, no reejecutes el archivo completo: esa migración ya está aplicada.
 
+Las tres migraciones están aplicadas y alineadas en hosted: `20260920190000`, `20260920220000` y `20260921233000` (Fase 0b, `npx supabase db push` el 2026-09-22). No reejecutes ninguna.
+
+## Fase 0b — Privileges de funciones (aplicada)
+
+Aplicada en el proyecto hosted. Cierra el EXECUTE de `PUBLIC`/`anon` sobre funciones sensibles, exige `can_write_project()` en el recálculo y deja `search_path` vacío en las funciones DEFINER.
+
+Verificación: sonda hosted en verde; prueba funcional de administrador (login, ruta, checklist y recálculo) exitosa. Detalle en `docs/security-and-rls.md`.
+
 ## Scripts
 
 | Comando | Función |

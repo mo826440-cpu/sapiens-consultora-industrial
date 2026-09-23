@@ -247,9 +247,11 @@ Pendiente: `write_audit_log` en Fase 5.
 
 Implementadas: `current_app_role()`, `is_active_user()`, `is_admin()`, `is_staff()`, `handle_new_user()`, `set_updated_at()`, `protect_profile_privileges()`, `can_write_project()`, `can_edit_task(uuid)`, `recalculate_stage_progress(uuid)`.
 
-`recalculate_stage_progress` promedia el % de ítems hechos y el % de tareas (`finalizada` = 100). Las ocho etapas pesan igual.
+`recalculate_stage_progress` promedia el % de ítems hechos y el % de tareas (`finalizada` = 100). Las ocho etapas pesan igual. La fórmula no cambió en la Fase 0b; esa función ahora exige `public.can_write_project()` antes de escribir.
 
-Todas las `SECURITY DEFINER` usan `search_path = public`.
+Todas las `SECURITY DEFINER` (correctiva `20260921233000`) usan `SET search_path = ''` y califican esquema y objeto (`public.*`, `auth.uid()`, `pg_catalog.*`). `set_updated_at` no es DEFINER; también quedó con `search_path` vacío.
+
+EXECUTE: `PUBLIC` y `anon` no ejecutan funciones sensibles. `authenticated` ejecuta helpers de política y el recálculo. Los triggers no se exponen como RPC.
 
 ## 18. Vistas previstas
 
@@ -268,8 +270,9 @@ La migración de Fase 2 inserta los 4 roles y una fila de `app_settings`. La de 
 
 ## 22. Orden de migraciones
 
-1. `20260920190000_auth_profiles_roles.sql`
-2. `20260920220000_stages_tasks_milestones_progress.sql`
+1. `20260920190000_auth_profiles_roles.sql` (aplicada en hosted)
+2. `20260920220000_stages_tasks_milestones_progress.sql` (aplicada en hosted)
+3. `20260921233000_secure_function_execute_privileges.sql` (aplicada en hosted el 2026-09-22)
 
 ## 23. Historial de cambios
 

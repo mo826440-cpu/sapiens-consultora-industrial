@@ -47,9 +47,11 @@ Usuarios con `profiles.is_active = false` no escriben.
 - Trigger `protect_profile_privileges`
 - `public.can_write_project()` (usuario activo con rol administrador, socio o colaborador)
 - `public.can_edit_task(uuid)` (staff, responsable, creador o asignado; exige usuario activo)
-- `public.recalculate_stage_progress(uuid)`
+- `public.recalculate_stage_progress(uuid)` (exige `can_write_project` antes de escribir)
 
-Toda función `SECURITY DEFINER` usa `search_path = public`. `current_app_role` se define así para no entrar en recursión de RLS al leer `user_roles`.
+Toda función `SECURITY DEFINER` usa `SET search_path = ''` y referencias calificadas (`public.*`, `auth.uid()`, `pg_catalog.*`). Así se evita que un atacante intercepte `now()`, `count()` u otras funciones vía `search_path`. `current_app_role` sigue siendo DEFINER para no entrar en recursión de RLS al leer `user_roles`. `is_admin`, `is_staff`, `can_write_project`, `can_edit_task` e `is_active_user` devuelven `false` (nunca `null`) cuando no hay privilegio.
+
+`set_updated_at` no es DEFINER (corre como el usuario que actualiza la fila). También usa `search_path` vacío y `pg_catalog.now()`.
 
 ## Políticas implementadas (Fase 2)
 
@@ -96,8 +98,90 @@ Migración: `supabase/migrations/20260920220000_stages_tasks_milestones_progress
 
 `vencida` no se guarda: se calcula en la UI si `due_date` es anterior a hoy y el estado no es `finalizada`.
 
+## Correctiva Fase 0b (funciones)
+
+Migración: `supabase/migrations/20260921233000_secure_function_execute_privileges.sql`.
+
+Estado: **aplicada en hosted** el 2026-09-22 (`npx supabase db push`). Las tres migraciones (`20260920190000`, `20260920220000`, `20260921233000`) están alineadas en local y remoto. La vulnerabilidad de EXECUTE público quedó corregida: `anon` ya no obtiene HTTP 200 en los RPC protegidos (sonda hosted en verde). La prueba funcional como administrador (login, ruta, detalle, checklist y recálculo) fue exitosa.
+
+### Hallazgo
+
+`recalculate_stage_progress` es `SECURITY DEFINER` y escribía `project_stages` sin comprobar rol. `EXECUTE` quedó disponible para `PUBLIC`/`anon`. Un cliente sin sesión obtuvo HTTP 200 al invocar el RPC.
+
+### Contrato de EXECUTE
+
+| Función | PUBLIC | anon | authenticated |
+| --- | --- | --- | --- |
+| `is_active_user`, `current_app_role`, `is_admin`, `is_staff`, `can_write_project`, `can_edit_task`, `recalculate_stage_progress` | REVOKE | REVOKE | GRANT |
+| `set_updated_at`, `protect_profile_privileges`, `handle_new_user` | REVOKE | REVOKE | REVOKE (solo triggers) |
+
+El recálculo, además del GRANT, hace `RAISE` `42501` si `not public.can_write_project()`. Un `solo_lectura` o un usuario inactivo autenticado no escribe `progress_percent`. Admin, socio y colaborador activos sí, como la UI actual.
+
+Los helpers DEFINER leen con `auth.uid()`: no consultan ni modifican filas de otros usuarios salvo el recálculo sobre la etapa indicada, y solo si hay permiso de escritura.
+
+### Matriz de actores (funciones)
+
+| Actor | Helpers RPC | Recálculo (escribe) | Triggers como RPC |
+| --- | --- | --- | --- |
+| Anónimo (`anon`) | No | No | No |
+| Autenticado inactivo | Sí; booleanos en `false` | Llama y recibe `42501`; no escribe | No |
+| Solo lectura | Sí; `can_write_project` = false | `42501`; no escribe | No |
+| Colaborador activo | Sí | Sí | No |
+| Socio activo | Sí | Sí | No |
+| Administrador activo | Sí | Sí | No |
+
+### Consultas de verificación (después de aplicar)
+
+```sql
+select
+  p.proname,
+  p.prosecdef as security_definer,
+  pg_get_function_identity_arguments(p.oid) as args,
+  p.proconfig as search_path_config
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public'
+  and p.proname in (
+    'set_updated_at',
+    'protect_profile_privileges',
+    'handle_new_user',
+    'is_active_user',
+    'current_app_role',
+    'is_admin',
+    'is_staff',
+    'can_write_project',
+    'can_edit_task',
+    'recalculate_stage_progress'
+  )
+order by p.proname;
+
+select
+  p.proname,
+  r.rolname,
+  has_function_privilege(r.oid, p.oid, 'EXECUTE') as can_execute
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+cross join pg_roles r
+where n.nspname = 'public'
+  and p.proname in (
+    'recalculate_stage_progress',
+    'can_write_project',
+    'is_admin',
+    'handle_new_user',
+    'set_updated_at'
+  )
+  and r.rolname in ('anon', 'authenticated')
+order by p.proname, r.rolname;
+```
+
+Esperado: `proconfig` con `search_path=`. `anon` sin EXECUTE. `authenticated` con EXECUTE en recálculo y helpers, no en `handle_new_user` ni `set_updated_at`.
+
+Sonda desde la app (no corre en `npm test` salvo que se pida): `VITE_RUN_HOSTED_SECURITY_PROBE=1 npm test`.
+
 ## Pendiente
 
-- Pruebas de RLS contra un proyecto real o stack local (requiere Docker o hosted).
+- Sonda live: `VITE_RUN_HOSTED_SECURITY_PROBE=1 npm test` (desactivada por defecto; pasó el 2026-09-22).
+- Pruebas de RLS de tablas contra stack local (requiere Docker).
 - Edge Function de invitación, si se quiere dejar de usar el panel.
 - Políticas de documentos, decisiones, CRM y web (Fases 5 a 7).
+- Ajuste de RLS de ítems/hitos para colaborador (solo propios o asignados): fase posterior.

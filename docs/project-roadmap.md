@@ -21,8 +21,9 @@ Primer caso validado: aprender, ajustar, estandarizar y crecer.
 | --- | --- | --- |
 | 0 | Hecha | Arquitectura y planificación |
 | 1 | Hecha | Estructura, reglas, documentación y shell |
-| 2 | Hecha | Supabase, Auth, perfiles y permisos |
-| 3 | Hecha en código; pendiente aplicar migración hosted | Etapas, tareas, hitos y avances |
+| 2 | Hecha (hosted) | Supabase, Auth, perfiles y permisos |
+| 3 | Hecha (hosted) | Etapas, tareas, hitos y avances |
+| 0b | Hecha (hosted) | Privileges EXECUTE, `search_path` vacío y guarda del recálculo |
 | 4 | Pendiente | Dashboard e indicadores reales |
 | 5 | Pendiente | Documentos, decisiones y auditoría |
 | 6 | Pendiente | Empresas, oportunidades y reuniones |
